@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Ahmad Bhai Signals Bot</title>
+
+<link rel="icon" href="icon.png" type="image/png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="theme-color" content="#611D82">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; margin: 0; padding: 0; font-family: "Segoe UI", sans-serif; background: #000; color: #fff; overflow-x: hidden; }
+body {
+    background: url("./bg.png") no-repeat center center/cover fixed;
+    display: flex; flex-direction: column; align-items: center; padding: 15px;
+}
+
+/* Header & Positioning */
+.header { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; position: relative; }
+.pre-emoji { position: absolute; left: 0; top: 0; width: 35px; height: 35px; display: none; z-index: 5; }
+.bot-name { font-size: 18px; font-weight: 800; color: #fff; text-align: center; letter-spacing: 1px; }
+
+/* Logo & Animation */
+.logo-container { position: relative; margin: 10px 0; }
+.logo { width: 95px; height: 95px; border-radius: 50%; border: 3px solid #611D82; object-fit: cover; }
+.pulse-anim { animation: zoomPulse 1.5s infinite ease-in-out; }
+@keyframes zoomPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+/* BRANDED PREMIUM BUTTON (Logo wala) */
+.premium-btn-container { width: 100%; max-width: 350px; display: flex; justify-content: center; margin: 15px 0; z-index: 10; }
+.premium-subscription-btn {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 12px;
+    width: 100%; padding: 12px 25px; background: linear-gradient(135deg, #611D82 0%, #290a3d 100%);
+    border: 2px solid #8e44ad; border-radius: 50px; color: #fff; font-size: 16px;
+    font-weight: 800; text-transform: uppercase; text-decoration: none; overflow: hidden;
+    transition: 0.3s; box-shadow: 0 4px 15px rgba(97, 29, 130, 0.5); animation: premiumPulse 2s infinite;
+    cursor: pointer;
+}
+.btn-logo-icon { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.5); object-fit: cover; }
+.shimmer {
+    position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 215, 0, 0.3) 50%, transparent 100%);
+    animation: shimmerEffect 2.5s infinite;
+}
+@keyframes premiumPulse { 0% { box-shadow: 0 0 0 0 rgba(142, 68, 173, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(142, 68, 173, 0); } 100% { box-shadow: 0 0 0 0 rgba(142, 68, 173, 0); } }
+@keyframes shimmerEffect { 0% { left: -100%; } 100% { left: 100%; } }
+
+/* Selectors */
+#controlGroup { width: 100%; max-width: 350px; display: flex; flex-direction: column; align-items: center; }
+.selector { width: 100%; margin: 7px 0; position: relative; }
+.selector button {
+    width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #333;
+    background: rgba(0,0,0,0.85); color: #fff; font-size: 14px; text-align: left;
+    display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+}
+.options {
+    display: none; position: absolute; top: 55px; left: 0; right: 0; background: #0f0f0f;
+    border-radius: 12px; max-height: 200px; overflow-y: auto; z-index: 100; border: 1px solid #611D82;
+}
+.options div { padding: 12px; border-bottom: 1px solid #222; cursor: pointer; }
+.options div:hover { background: #611D82; color: #fff; }
+
+.frozen { pointer-events: none !important; opacity: 0.5; filter: grayscale(1); }
+
+.trade-btn {
+    width: 100%; max-width: 350px; padding: 16px; border-radius: 12px; border: none;
+    background: #222; color: #555; font-weight: 900; font-size: 17px; margin-top: 15px;
+    text-transform: uppercase; transition: 0.4s;
+}
+.trade-btn.enabled { background: #611D82; color: #fff; cursor: pointer; box-shadow: 0 0 25px rgba(97, 29, 130, 0.5); }
+
+.trade-box { margin-top: 15px; text-align: center; display: none; background: rgba(0,0,0,0.95); padding: 15px; border-radius: 15px; width: 220px; border: 2px solid #611D82; box-shadow: 0 0 20px #611D82; }
+.pill { padding: 12px; border-radius: 10px; font-size: 32px; font-weight: 900; margin-bottom: 5px; display: block; }
+.up { background: #00ff00; color: #000; text-shadow: 0 0 5px #fff; }
+.down { background: #ff0000; color: #fff; text-shadow: 0 0 5px #000; }
+
+/* Modal & Copy Tooltip */
+#modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
+.modal-box { background: #111; padding: 25px; border-radius: 20px; width: 100%; max-width: 330px; text-align: center; border: 1px solid #611D82; }
+.id-box { background: #000; padding: 12px; border-radius: 10px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; position: relative; border: 1px solid #333; }
+.copy-btn { background: #611D82; color: #fff; padding: 6px 14px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: bold; }
+
+#copyTip {
+    position: absolute; top: -45px; right: 5px; background: #fff; color: #611D82;
+    padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800;
+    display: none; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translateY(15px) scale(0.8); }
+    20% { opacity: 1; transform: translateY(0) scale(1.1); }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+.animate-tip { display: block !important; animation: slideUpFade 2s forwards; }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <img src="pre.png" id="preEmoji" class="pre-emoji">
+    <div id="botName" class="bot-name">Ahmad Bhai Signals Bot</div>
+</div>
+
+<div class="logo-container">
+    <img src="logo.png" id="mainLogo" class="logo">
+</div>
+
+<div class="premium-btn-container" id="premBtnCont">
+    <div class="premium-subscription-btn" onclick="showModal()">
+        <img src="logo.png" class="btn-logo-icon">
+        <span class="btn-text">Unlock Premium</span>
+        <span class="shimmer"></span>
+    </div>
+</div>
+
+<div id="controlGroup">
+    <div class="selector hidden" id="catSection">
+        <button onclick="openDrop('catDrop')"><span id="txtCat">CURRENCY PAIRS</span></button>
+        <div id="catDrop" class="options">
+            <div onclick="setCat('CURRENCY PAIRS')">CURRENCY PAIRS</div>
+            <div onclick="setCat('CRYPTO PAIRS')">CRYPTO PAIRS</div>
+            <div onclick="setCat('COMMODITIES')">COMMODITIES</div>
+            <div onclick="setCat('STOCKS PAIRS')">STOCKS PAIRS</div>
+        </div>
+    </div>
+
+    <div class="selector">
+        <button onclick="openDrop('pairDrop')"><span id="txtPair">SELECT PAIR</span></button>
+        <div id="pairDrop" class="options"></div>
+    </div>
+
+    <div class="selector">
+        <button onclick="openDrop('timeDrop')"><span id="txtTime">01 Min</span></button>
+        <div id="timeDrop" class="options">
+            <div onclick="setTime('05 Sec', 5)">05 Sec</div>
+            <div onclick="setTime('15 Sec', 15)">15 Sec</div>
+            <div onclick="setTime('30 Sec', 30)">30 Sec</div>
+            <div onclick="setTime('01 Min', 60)">01 Min</div>
+            <div onclick="setTime('02 Min', 120)">02 Min</div>
+            <div onclick="setTime('05 Min', 300)">05 Min</div>
+        </div>
+    </div>
+</div>
+
+<button id="mainBtn" class="trade-btn" onclick="getSignal()">GET SIGNAL</button>
+
+<div id="tradeBox" class="trade-box">
+    <div id="resDir" class="pill">UP</div>
+    <div id="resTimer" style="font-size:24px; font-weight:bold; color:#611D82;">00</div>
+</div>
+
+<div id="modal">
+    <div class="modal-box">
+        <img src="logo.png" style="width:70px; border-radius:50%; margin-bottom:15px;" class="pulse-anim">
+        <h3 style="margin:0; letter-spacing:1px;">Premium Locked <img src="lock.png" width="20"></h3>
+        <div class="id-box">
+            <div id="copyTip">✓ Copied</div>
+            <span id="myID" style="font-size:11px; color:#611D82; font-family:monospace; font-weight:bold;"></span>
+            <span class="copy-btn" onclick="copyID()">COPY</span>
+        </div>
+        <p style="font-size:11px; color:#777;">CONTACT FOR UNLOCKING PREMIUM</p>
+        <a href="https://wa.me/923120883884" style="color:#00aaff; text-decoration:none; font-weight:bold; font-size:16px;">+923120883884</a>
+        <br><br>
+        <button onclick="hideModal()" style="background:#333; color:#fff; border:none; padding:10px 30px; border-radius:8px; cursor:pointer; font-weight:bold;">CLOSE</button>
+    </div>
+</div>
+
+<script>
+let isPremium = false;
+let selectedSec = 60;
+let activeTimer = null;
+
+const pairsFree = ["USD/PKR (OTC)", "USD/INR (OTC)", "USD/BDT (OTC)"];
+const pairsPrem = {
+    "CURRENCY PAIRS": ["USD/BRL (OTC)", "USD/INR (OTC)", "EUR/USD (OTC)", "GBP/USD (OTC)"],
+    "CRYPTO PAIRS": ["BITCOIN (OTC)", "ETHEREUM (OTC)", "SOLANA (OTC)"],
+    "COMMODITIES": ["GOLD (OTC)", "SILVER (OTC)"],
+    "STOCKS PAIRS": ["APPLE (OTC)", "GOOGLE (OTC)"]
+};
+
+// --- AUTH SYSTEM ---
+function getUID() {
+    let id = localStorage.getItem('ahmad_script_uid');
+    if(!id) {
+        id = Array.from({length:20}, () => Math.floor(Math.random() * 10)).join('');
+        localStorage.setItem('ahmad_script_uid', id);
+    }
+    return id;
+}
+const myUID = getUID();
+document.getElementById('myID').innerText = myUID;
+
+async function syncAuth() {
+    const dbURL = `https://reactions-maker-site-default-rtdb.firebaseio.com/users.json`;
+    try {
+        const r = await fetch(dbURL);
+        const data = await r.json();
+        let unlocked = false;
+        if(data) {
+            Object.values(data).forEach(user => { if(user && user.id === myUID) unlocked = true; });
+        }
+        unlocked ? applyPrem() : applyFree();
+    } catch(e) {}
+}
+setInterval(syncAuth, 5000);
+syncAuth();
+
+function applyPrem() {
+    isPremium = true;
+    document.getElementById('premBtnCont').classList.add('hidden');
+    document.getElementById('preEmoji').style.display = 'block';
+    document.getElementById('catSection').classList.remove('hidden');
+    document.getElementById('mainLogo').classList.add('pulse-anim');
+    loadPairs(pairsPrem["CURRENCY PAIRS"]);
+}
+
+function applyFree() {
+    isPremium = false;
+    document.getElementById('premBtnCont').classList.remove('hidden');
+    document.getElementById('preEmoji').style.display = 'none';
+    document.getElementById('catSection').classList.add('hidden');
+    document.getElementById('mainLogo').classList.remove('pulse-anim');
+    loadPairs(pairsFree);
+}
+
+// --- PERSISTENCE ---
+function checkActiveSignal() {
+    const saved = localStorage.getItem('active_signal');
+    if(!saved) return;
+    const state = JSON.parse(saved);
+    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    const remaining = state.dur - elapsed;
+    if(remaining > 0) resumeSignal(state.dir, remaining);
+    else localStorage.removeItem('active_signal');
+}
+
+function resumeSignal(dir, timeLeft) {
+    const b = document.getElementById('mainBtn');
+    b.classList.remove('enabled');
+    document.getElementById('controlGroup').classList.add('frozen');
+    document.getElementById('tradeBox').style.display = 'block';
+    const dEl = document.getElementById('resDir');
+    dEl.innerText = dir; dEl.className = 'pill ' + dir.toLowerCase();
+    startTimer(timeLeft);
+}
+
+function getSignal() {
+    if(!document.getElementById('mainBtn').classList.contains('enabled')) return;
+    const b = document.getElementById('mainBtn');
+    const box = document.getElementById('tradeBox');
+    const controls = document.getElementById('controlGroup');
+    b.classList.remove('enabled');
+    controls.classList.add('frozen');
+    box.style.display = 'none';
+
+    setTimeout(() => {
+        box.style.display = 'block';
+        const dir = Math.random() > 0.49 ? "UP" : "DOWN";
+        document.getElementById('resDir').innerText = dir;
+        document.getElementById('resDir').className = 'pill ' + dir.toLowerCase();
+        localStorage.setItem('active_signal', JSON.stringify({dir, dur: selectedSec, startTime: Date.now()}));
+        startTimer(selectedSec);
+    }, 1500);
+}
+
+function startTimer(sec) {
+    let count = sec;
+    const tEl = document.getElementById('resTimer');
+    if(activeTimer) clearInterval(activeTimer);
+    activeTimer = setInterval(() => {
+        count--;
+        tEl.innerText = count < 10 ? "0"+count : count;
+        if(count <= 0) {
+            clearInterval(activeTimer);
+            localStorage.removeItem('active_signal');
+            document.getElementById('tradeBox').style.display = 'none';
+            document.getElementById('controlGroup').classList.remove('frozen');
+            checkBtn();
+        }
+    }, 1000);
+}
+
+// --- UI HANDLERS ---
+function openDrop(id) {
+    document.querySelectorAll('.options').forEach(o => { if(o.id!==id) o.style.display='none'; });
+    let e = document.getElementById(id); e.style.display = (e.style.display==='block')?'none':'block';
+}
+
+function loadPairs(arr) {
+    let cont = document.getElementById('pairDrop'); cont.innerHTML = '';
+    arr.forEach(p => {
+        let d = document.createElement('div'); d.innerText = p;
+        d.onclick = () => { document.getElementById('txtPair').innerText = p; openDrop('pairDrop'); checkBtn(); };
+        cont.appendChild(d);
+    });
+}
+
+function setCat(c) {
+    document.getElementById('txtCat').innerText = c;
+    loadPairs(pairsPrem[c]);
+    document.getElementById('txtPair').innerText = "SELECT PAIR";
+    openDrop('catDrop'); checkBtn();
+}
+
+function setTime(txt, sec) {
+    document.getElementById('txtTime').innerText = txt;
+    selectedSec = sec; openDrop('timeDrop');
+}
+
+function checkBtn() {
+    let p = document.getElementById('txtPair').innerText;
+    if(p !== "SELECT PAIR" && !localStorage.getItem('active_signal')) document.getElementById('mainBtn').classList.add('enabled'); 
+    else document.getElementById('mainBtn').classList.remove('enabled');
+}
+
+function showModal() { document.getElementById('modal').style.display='flex'; }
+function hideModal() { document.getElementById('modal').style.display='none'; }
+
+function copyID() {
+    navigator.clipboard.writeText(myUID).then(() => {
+        const tip = document.getElementById('copyTip');
+        tip.classList.remove('animate-tip');
+        void tip.offsetWidth;
+        tip.classList.add('animate-tip');
+        setTimeout(() => tip.classList.remove('animate-tip'), 2000);
+    });
+}
+
+window.onload = () => { if(!isPremium) loadPairs(pairsFree); checkActiveSignal(); };
+window.onclick = (e) => { if(!e.target.closest('.selector')) document.querySelectorAll('.options').forEach(o=>o.style.display='none'); };
+</script>
+</body>
+</html>

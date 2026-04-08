@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Premium Features - Ahmad Bhai Signals Bot</title>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+    margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
+    background: #000 url("./bg.png") no-repeat center center/cover fixed;
+    color: #fff; display: flex; flex-direction: column; align-items: center;
+}
+
+.container { width: 100%; max-width: 450px; padding: 20px; }
+
+/* Header */
+.header { text-align: center; margin-bottom: 25px; }
+.header h1 { color: #fff; font-size: 24px; margin-bottom: 5px; }
+.header p { color: #aaa; font-size: 14px; }
+
+/* Features List */
+.features-grid {
+    background: rgba(97, 29, 130, 0.1);
+    border: 1px solid #611D82;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+}
+.feature-item { display: flex; align-items: center; margin-bottom: 12px; font-size: 14px; }
+.feature-item span { color: #00ff00; margin-right: 12px; font-weight: bold; font-size: 18px; }
+
+/* Pricing Cards */
+.pricing-title { text-align: center; margin-bottom: 15px; font-size: 18px; font-weight: bold; }
+.package-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.3s;
+    cursor: pointer;
+}
+.package-card:hover { border-color: #611D82; background: rgba(97, 29, 130, 0.15); }
+.package-card.active { border-color: #611D82; background: rgba(97, 29, 130, 0.3); transform: scale(1.02); }
+
+.pkg-info h3 { margin: 0; font-size: 16px; color: #fff; }
+.pkg-info p { margin: 3px 0 0; font-size: 12px; color: #888; }
+.pkg-price { font-size: 18px; font-weight: 800; color: #611D82; }
+
+/* Payment UI Section */
+#paymentArea {
+    display: none;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid #611D82;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 15px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(97, 29, 130, 0.4);
+    animation: slideIn 0.4s ease-out;
+}
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.qr-img { width: 190px; height: 190px; border: 4px solid #fff; border-radius: 10px; margin: 15px 0; }
+
+.tid-input {
+    width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #333;
+    background: #111; color: #fff; font-size: 16px; margin-top: 8px; outline: none;
+}
+.tid-input:focus { border-color: #611D82; }
+
+#errorMsg { color: #ff4444; font-size: 12px; margin-top: 8px; display: none; font-weight: bold; }
+
+.btn-confirm {
+    width: 100%; padding: 15px; border-radius: 10px; border: none;
+    background: #611D82; color: #fff; font-weight: 900; font-size: 16px;
+    margin-top: 15px; cursor: pointer; text-transform: uppercase;
+}
+
+.btn-back { display: block; text-align: center; color: #888; text-decoration: none; margin-top: 25px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>PREMIUM FEATURES</h1>
+        <p>Unlock high-accuracy signals & more</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-item"><span>✓</span> 95%+ Signal Accuracy</div>
+        <div class="feature-item"><span>✓</span> All Currency & Crypto Pairs</div>
+        <div class="feature-item"><span>✓</span> 05 Sec to 05 Min Timeframes</div>
+        <div class="feature-item"><span>✓</span> No Daily Signal Limit</div>
+        <div class="feature-item"><span>✓</span> Real-time Market Monitoring</div>
+        <div class="feature-item"><span>✓</span> 24/7 VIP Support</div>
+    </div>
+
+    <div id="selectionArea">
+        <div class="pricing-title">SELECT YOUR PLAN</div>
+
+        <div class="package-card" onclick="openPayment(this, 'Monthly', '$10')">
+            <div class="pkg-info"><h3>Monthly Plan</h3><p>Best for starters</p></div>
+            <div class="pkg-price">$10</div>
+        </div>
+
+        <div class="package-card" onclick="openPayment(this, '3 Months', '$30')">
+            <div class="pkg-info"><h3>Quarterly Plan</h3><p>3 Months Protection</p></div>
+            <div class="pkg-price">$30</div>
+        </div>
+
+        <div class="package-card" onclick="openPayment(this, '6 Months', '$60')">
+            <div class="pkg-info"><h3>Half-Year Plan</h3><p>6 Months Full Access</p></div>
+            <div class="pkg-price">$60</div>
+        </div>
+
+        <div class="package-card" onclick="openPayment(this, 'Annual', '$120')">
+            <div class="pkg-info"><h3>Yearly VIP</h3><p>Unstoppable Trading</p></div>
+            <div class="pkg-price">$120</div>
+        </div>
+    </div>
+
+    <div id="paymentArea">
+        <h3 style="margin:0; color:#fff;">SCAN & PAY</h3>
+        <p id="targetPkg" style="color:#611D82; font-weight:bold; font-size:14px; margin:5px 0;"></p>
+        
+        <img src="qr.png" class="qr-img">
+        
+        <div style="text-align:left; font-size:12px; color:#aaa; margin-top:10px; padding-left:5px;">TRANSACTION ID (TID)</div>
+        <input type="text" id="tidInput" class="tid-input" placeholder="Enter 10-12 digit TID">
+        <div id="errorMsg">⚠ Please enter a valid Transaction ID</div>
+        
+        <button class="btn-confirm" onclick="submitToAhmad()">CHECK PAYMENT</button>
+        <p style="font-size:10px; color:#555; margin-top:10px;">ID will be unlocked after TID verification</p>
+    </div>
+
+    <a href="index.html" class="btn-back">← Back to Signal Bot</a>
+</div>
+
+<script>
+let activePlan = { name: '', price: '' };
+
+function openPayment(el, name, price) {
+    // UI Change
+    document.querySelectorAll('.package-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    
+    // Set Data
+    activePlan.name = name;
+    activePlan.price = price;
+    
+    // Transitions
+    document.getElementById('selectionArea').style.display = 'none';
+    document.getElementById('paymentArea').style.display = 'block';
+    document.getElementById('targetPkg').innerText = `${name} Package - ${price}`;
+}
+
+function submitToAhmad() {
+    const tid = document.getElementById('tidInput').value.trim();
+    const err = document.getElementById('errorMsg');
+    const myUID = localStorage.getItem('ahmad_script_uid') || "Unknown";
+
+    if(tid.length < 5) {
+        err.style.display = 'block';
+        document.getElementById('tidInput').style.borderColor = '#ff4444';
+        return;
+    } else {
+        err.style.display = 'none';
+        document.getElementById('tidInput').style.borderColor = '#611D82';
+    }
+
+    // Professional Message Template
+    const msg = `🚀 *PREMIUM UPGRADE REQUEST* 🚀%0A%0A` +
+                `👤 *User ID:* ${myUID}%0A` +
+                `📦 *Plan:* ${activePlan.name}%0A` +
+                `💰 *Amount:* ${activePlan.price}%0A` +
+                `🔢 *TID:* ${tid}%0A%0A` +
+                `_Ahmad Bhai, check payment details and activate my ID._`;
+
+    // Final Redirect
+    window.location.href = `https://wa.me/923120883884?text=${msg}`;
+}
+</script>
+
+</body>
+</html>
