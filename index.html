@@ -8,8 +8,6 @@
 <link rel="icon" href="icon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="theme-color" content="#611D82">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,7 +28,7 @@ body {
 .pulse-anim { animation: zoomPulse 1.5s infinite ease-in-out; }
 @keyframes zoomPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
-/* BRANDED PREMIUM BUTTON (Logo wala) */
+/* BRANDED PREMIUM BUTTON */
 .premium-btn-container { width: 100%; max-width: 350px; display: flex; justify-content: center; margin: 15px 0; z-index: 10; }
 .premium-subscription-btn {
     position: relative; display: flex; align-items: center; justify-content: center; gap: 12px;
@@ -97,6 +95,8 @@ body {
 }
 .animate-tip { display: block !important; animation: slideUpFade 2s forwards; }
 
+.pf-btn { background: transparent; border: 1.5px solid #611D82; color: #611D82; padding: 10px; border-radius: 10px; margin-top: 15px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+
 .hidden { display: none !important; }
 </style>
 </head>
@@ -159,13 +159,18 @@ body {
     <div class="modal-box">
         <img src="logo.png" style="width:70px; border-radius:50%; margin-bottom:15px;" class="pulse-anim">
         <h3 style="margin:0; letter-spacing:1px;">Premium Locked <img src="lock.png" width="20"></h3>
+        
         <div class="id-box">
             <div id="copyTip">✓ Copied</div>
             <span id="myID" style="font-size:11px; color:#611D82; font-family:monospace; font-weight:bold;"></span>
             <span class="copy-btn" onclick="copyID()">COPY</span>
         </div>
-        <p style="font-size:11px; color:#777;">CONTACT FOR UNLOCKING PREMIUM</p>
+        
+        <p style="font-size:11px; color:#777; margin-bottom: 5px;">CONTACT FOR UNLOCKING PREMIUM</p>
         <a href="https://wa.me/923120883884" style="color:#00aaff; text-decoration:none; font-weight:bold; font-size:16px;">+923120883884</a>
+        
+        <button class="pf-btn" onclick="location.href='pf.html'">Premium Features</button>
+        
         <br><br>
         <button onclick="hideModal()" style="background:#333; color:#fff; border:none; padding:10px 30px; border-radius:8px; cursor:pointer; font-weight:bold;">CLOSE</button>
     </div>
@@ -184,7 +189,6 @@ const pairsPrem = {
     "STOCKS PAIRS": ["APPLE (OTC)", "GOOGLE (OTC)"]
 };
 
-// --- AUTH SYSTEM ---
 function getUID() {
     let id = localStorage.getItem('ahmad_script_uid');
     if(!id) {
@@ -229,7 +233,6 @@ function applyFree() {
     loadPairs(pairsFree);
 }
 
-// --- PERSISTENCE ---
 function checkActiveSignal() {
     const saved = localStorage.getItem('active_signal');
     if(!saved) return;
@@ -286,7 +289,6 @@ function startTimer(sec) {
     }, 1000);
 }
 
-// --- UI HANDLERS ---
 function openDrop(id) {
     document.querySelectorAll('.options').forEach(o => { if(o.id!==id) o.style.display='none'; });
     let e = document.getElementById(id); e.style.display = (e.style.display==='block')?'none':'block';
