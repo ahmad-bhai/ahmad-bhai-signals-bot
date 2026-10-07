@@ -3,8 +3,8 @@ const app = Express();
 
 app.use(Express.json());
 
-const BOT_TOKEN = process.env.BOT_TOKEN || "8719945288:AAHWhev5jo62-l0D6laDKBBfkQxjZgYp__k";
-const CHANNEL_LINK = "https://t.me/+_nOogKxvxvs5YmI0"; // Apna link yahan badlein
+const BOT_TOKEN = process.env.BOT_TOKEN || "8719945288:AAF5CNDY-UMAaq7KGbW6kP8whmSmlyPL1GI";
+const CHANNEL_LINK = "https://t.me/+CiQ-r2b-tBA4YzM0"; // Apna link yahan badlein
 
 // Telegram Message Sending Helper Function
 async function sendMessage(chatId, text) {
